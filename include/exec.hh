@@ -8,7 +8,7 @@ struct [[nodiscard]] CommandOutput {
   std::string stdout;
   std::string stderr;
 
-  CommandOutput() = default;
+  CommandOutput() = delete;
 
   bool success();
 };

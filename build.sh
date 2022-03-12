@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
-set -x
+set -e
+set -o pipefail
 
 [[ -d build ]] || mkdir build -v
 
@@ -9,4 +10,4 @@ cd build
 
 cmake ..
 make
-./tcp_server "$@"
+./exec "$@"
