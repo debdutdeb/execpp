@@ -1,0 +1,8 @@
+-I
+../include/
+-I
+./include
+-std=c++17
+-fPIC
+-Werror
+-Wall
