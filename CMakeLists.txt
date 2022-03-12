@@ -5,7 +5,7 @@ project(libexec VERSION 0.01)
 include_directories(include)
 
 add_compile_options(-Wall)
-# add_compile_options(-Werror)
+add_compile_options(-Werror)
 add_compile_options(-fPIC)
 
 add_executable(exec include/exec.cc src/main.cpp)
