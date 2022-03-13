@@ -20,27 +20,28 @@ void print_error_and_exit(int err) {
   exit(EXIT_FAILURE);
 }
 
-[[nodiscard]] char *const *get_arguments(std::string command) {
-  /**
-   * we want for each word
-   * to allocate a c string
-   * then create a c style array of strings
-   */
-  std::vector<const char *> components;
-  size_t pos = 0;
-  while ((pos = command.find(" ")) != std::string::npos) {
-    components.push_back(command.substr(0, pos).c_str());
-    command.erase(0, pos + 1);
-  }
+/** doesn't support shell quoting sorry */
+[[nodiscard]] std::shared_ptr<std::vector<const char *>>
+string_split(std::string source, char delimiter) {
+  // not on heap haha
+  std::shared_ptr<std::vector<const char *>> destination =
+      std::make_shared<std::vector<const char *>>();
 
-  char *args = (char *)malloc(sizeof(char *) * components.size());
-  if (args == nullptr)
-    print_error_and_exit(errno);
+  size_t initial_pos = 0;
 
-  for (auto c : components)
+  for (size_t pos = 0;
+       (pos = source.find(delimiter, initial_pos)) != std::string::npos;
+       initial_pos = pos + 1)
+    destination->push_back(
+        source.substr(initial_pos, pos - initial_pos).c_str());
+
+  destination->push_back(source.substr(initial_pos).c_str());
+  destination->push_back(NULL);
+
+  for (auto c : *destination)
     std::cout << c << '\n';
 
-  return nullptr;
+  return destination;
 }
 
 std::shared_ptr<CommandOutput> run_command(std::string command) {
@@ -66,7 +67,11 @@ std::shared_ptr<CommandOutput> run_command(std::string command) {
     // close(STDOUT_FILENO);
     // close(STDERR_FILENO);
 
-    (void)get_arguments("echo hello world"s);
+    auto c = string_split("echo hello", ' ');
+    // const char **argv = c.data();
+    // execvp(*argv, argv);
+    for (auto cc : *c)
+      std::cout << cc << '\n';
     // execvp(*argv, const_cast<char *const *>(argv));
   } else {
 
