@@ -31,15 +31,18 @@ string_split(std::string source, char delimiter) {
 
   for (size_t pos = 0;
        (pos = source.find(delimiter, initial_pos)) != std::string::npos;
-       initial_pos = pos + 1)
-    destination->push_back(
-        source.substr(initial_pos, pos - initial_pos).c_str());
+       initial_pos = pos + 1) {
+    auto s = source.substr(initial_pos, pos - initial_pos);
+    auto c = new char[s.length()];
+    memcpy(c, s.c_str(), s.length());
+    destination->push_back(c);
+  }
 
-  destination->push_back(source.substr(initial_pos).c_str());
+  auto s = source.substr(initial_pos);
+  auto c = new char[s.length()];
+  memcpy(c, s.c_str(), s.length());
+  destination->push_back(c);
   destination->push_back(NULL);
-
-  for (auto c : *destination)
-    std::cout << c << '\n';
 
   return destination;
 }
@@ -68,11 +71,8 @@ std::shared_ptr<CommandOutput> run_command(std::string command) {
     // close(STDERR_FILENO);
 
     auto c = string_split("echo hello", ' ');
-    // const char **argv = c.data();
-    // execvp(*argv, argv);
-    for (auto cc : *c)
-      std::cout << cc << '\n';
-    // execvp(*argv, const_cast<char *const *>(argv));
+    const char **argv = c->data();
+    execvp(*argv, const_cast<char **>(argv));
   } else {
 
     if (wait(&command_output->return_code) != child_pid)
